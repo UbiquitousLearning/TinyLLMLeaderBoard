@@ -25,7 +25,7 @@ function App() {
       <div className=" h-screen flex items-center justify-center">
         <PageHeader>
           <div className="Logo flex items-center justify-center mt-6">
-            <img src="/Logo.webp" alt="TinyLLM" className="w-64 h-64" />
+            <img src="./Logo.webp" alt="TinyLLM" className="w-64 h-64" />
           </div>
           <PageHeaderHeading className="hidden sm:block">
             🧐 How{" "}
