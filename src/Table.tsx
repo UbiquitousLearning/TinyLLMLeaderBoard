@@ -12,8 +12,9 @@ import {
   getSortedRowModel,
   useReactTable,
   createColumnHelper,
+  getExpandedRowModel,
 } from "@tanstack/react-table";
-import { Record, records } from "./lib/data";
+import { info, Info, Record, records } from "./lib/data";
 import {
   Table,
   TableBody,
@@ -24,7 +25,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "./components/ui/button";
 import { ArrowUpDown, Search } from "lucide-react";
-import React from "react";
+import React, { Fragment } from "react";
 import {
   Popover,
   PopoverContent,
@@ -37,8 +38,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-const helper = createColumnHelper<Record>();
-export const columns: ColumnDef<Record>[] = [
+const recordhelper = createColumnHelper<Record>();
+const infohelper = createColumnHelper<Info>();
+
+export const dataColumns: ColumnDef<Record>[] = [
   {
     header: "Name",
     accessorKey: "name",
@@ -135,7 +138,7 @@ export const columns: ColumnDef<Record>[] = [
       }
     },
   },
-  helper.group({
+  recordhelper.group({
     header: "Latency",
     id: "latency",
     columns: [
@@ -203,7 +206,7 @@ export const columns: ColumnDef<Record>[] = [
     ],
   }),
 
-  helper.group({
+  recordhelper.group({
     header: () => {
       return <div>Performance</div>;
     },
@@ -280,7 +283,7 @@ export function DataTable() {
   );
   const table = useReactTable({
     data,
-    columns,
+    columns: dataColumns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
@@ -337,7 +340,268 @@ export function DataTable() {
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell
+                colSpan={dataColumns.length}
+                className="h-24 text-center"
+              >
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+        {/* </div> */}
+      </Table>
+    </div>
+  );
+}
+const modelTypeIcon = {
+  "": "🤖",
+  instruct: "💠",
+  chat: "💬",
+  undefined: "🤖",
+};
+
+export const accColumns: ColumnDef<Info>[] = [
+  {
+    header: "Name",
+    accessorKey: "Model",
+    cell: (record) => (
+      <a
+        href={
+          record.row.original.Link ??
+          "https://huggingface.co/" + record.row.original.Model
+        }
+        target="_blank"
+        rel="noreferrer"
+        style={{ maxWidth: "350px", display: "inline-block" }}
+        className={record.row.original.Link ? "text-blue-500" : "text-gray-500"}
+      >
+        {
+          modelTypeIcon[
+            record.row.original.Type.toLowerCase() as keyof typeof modelTypeIcon
+          ]
+        }{" "}
+        {record.getValue() as string}
+      </a>
+    ),
+  },
+  {
+    header: "Parameters",
+    accessorKey: "Parameters",
+    cell: (record) => <span>{record.getValue()?.toString() ?? "-"}</span>,
+  },
+  {
+    header: "Release Date",
+    accessorKey: "ReleaseDate",
+    cell: (record) => <span>{record.getValue() as string}</span>,
+  },
+  {
+    header: "Affiliation",
+    accessorKey: "affiliation",
+    cell: (record) => <span>{record.getValue() as string}</span>,
+  },
+  {
+    header: "Context Window",
+    accessorKey: "MaxContextWindow",
+    cell: (record) => <span>{record.getValue() as string}</span>,
+  },
+  {
+    header: "Training Tok",
+    accessorKey: "TrainingTokens",
+    cell: (record) => (
+      <span style={{ width: "150px", display: "inline-block" }}>
+        {record.getValue() as string}
+      </span>
+    ),
+  },
+  infohelper.group({
+    header: () => {
+      return <div>Performance</div>;
+    },
+    id: "performance",
+    columns: [
+      {
+        // header: "Commonsense \n reasoning/understanding",
+        header: (column) => {
+          return (
+            <span>
+              Commonsense <br />
+              reasoning
+            </span>
+          );
+        },
+        accessorKey: "Commonsensereasoning",
+        // fixed 2 decimal points
+
+        cell: (record) => {
+          const value = parseFloat(record.getValue()?.toString() ?? "");
+          return <span>{isNaN(value) ? "-" : value.toFixed(4)}</span>;
+        },
+      },
+      {
+        header: (column) => {
+          return (
+            <span>
+              Problem <br />
+              solving
+            </span>
+          );
+        },
+        accessorKey: "Problemsolving",
+        cell: (record) => {
+          const value = parseFloat(record.getValue() as string);
+          return <span>{isNaN(value) ? "-" : value.toFixed(4)}</span>;
+        },
+      },
+      {
+        header: "Math",
+        accessorKey: "Math",
+        cell: (record) => {
+          const value = parseFloat(record.getValue()?.toString() ?? "");
+          return <span>{isNaN(value) ? "-" : value.toFixed(4)}</span>;
+        },
+      },
+    ],
+  }),
+];
+export function InfoTable() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const table = useReactTable({
+    data: info,
+    columns: accColumns,
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(), //client-side filtering
+    getFacetedRowModel: getFacetedRowModel(), // client-side faceting
+    getFacetedUniqueValues: getFacetedUniqueValues(), // generate unique values for select filter/autocomplete
+    getFacetedMinMaxValues: getFacetedMinMaxValues(), // generate min/max values for range filter
+    getExpandedRowModel: getExpandedRowModel(),
+    enableExpanding: true,
+
+    state: {
+      sorting,
+      columnFilters,
+    },
+  });
+
+  return (
+    <div className="rounded-md border my-2 overflow-auto ">
+      <Table>
+        <TableHeader className="sticky">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                // console.log(header);
+                return (
+                  <TableHead key={header.id} colSpan={header.colSpan}>
+                    {header.isPlaceholder ? (
+                      <tr></tr>
+                    ) : (
+                      flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )
+                    )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        {/* <div className="overflow-auto w-full"> */}
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <Fragment key={row.id}>
+                <TableRow
+                  onClick={() => {
+                    row.toggleExpanded();
+                    console.log(row);
+                  }}
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+                {row.getIsExpanded() && (
+                  <tr>
+                    {/* 2nd row is a custom 1 cell row */}
+                    <td colSpan={row.getVisibleCells().length}>
+                      {/* Description of rows of Attention Type ,	Layer Number,	Hidden Size,	Head Num,	Activation,	Vocabulary Size,	FFN ratio	,Architecture Innovation ,Training Innovations,Training Datasets */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-2">
+                        <div>
+                          <span className="font-bold">Attention Type:</span>{" "}
+                          {row.original.AttentionType}
+                        </div>
+                        <div>
+                          <span className="font-bold">Layer Number:</span>{" "}
+                          {row.original.LayerNumber}
+                        </div>
+                        <div>
+                          <span className="font-bold">Hidden Size:</span>{" "}
+                          {row.original.HiddenSize}
+                        </div>
+                        <div>
+                          <span className="font-bold">Head Num:</span>{" "}
+                          {row.original.HeadNum}
+                        </div>
+                        <div>
+                          <span className="font-bold">Activation:</span>{" "}
+                          {row.original.Activation}
+                        </div>
+                        <div>
+                          <span className="font-bold">Vocabulary Size:</span>{" "}
+                          {row.original.VocabularySize}
+                        </div>
+                        <div>
+                          <span className="font-bold">FFN ratio:</span>{" "}
+                          {row.original.FFNratio}
+                        </div>
+                        {row.original.ArchitectureInnovation.length > 1 && (
+                          <div className="col-span-4">
+                            <span className="font-bold">
+                              Architecture Innovation:
+                            </span>
+                            {"{"}
+                            {row.original.ArchitectureInnovation}
+                            {"}"}
+                          </div>
+                        )}
+                        {row.original.TrainingInnovations.length > 1 && (
+                          <div className="col-span-4">
+                            <span className="font-bold">
+                              Training Innovations:
+                            </span>
+                            {"{"}
+                            {row.original.TrainingInnovations}
+                            {"}"}
+                          </div>
+                        )}
+                        <div className="col-span-4">
+                          <span className="font-bold">Training Datasets:</span>{" "}
+                          {row.original.TrainingDatasets}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={100} className="h-24 text-center">
                 No results.
               </TableCell>
             </TableRow>

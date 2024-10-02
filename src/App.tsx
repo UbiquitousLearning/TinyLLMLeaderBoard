@@ -67,7 +67,12 @@ function App() {
               <BarChartBig className="mr-2 h-4 w-4" />
               Data Analysis
             </Button>
-            <Button variant={"secondary"}>
+            <Button
+              variant={"secondary"}
+              onClick={() =>
+                window.open("https://dl.acm.org/doi/10.1145/3662006.3662059")
+              }
+            >
               {/* Arxiv Logo */}
               <img src={Arxiv} alt="Arxiv" className="w-4 h-4 mr-2" />
               Paper
