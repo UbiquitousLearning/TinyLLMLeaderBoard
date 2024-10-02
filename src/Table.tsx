@@ -422,7 +422,7 @@ export const accColumns: ColumnDef<Info>[] = [
     columns: [
       {
         // header: "Commonsense \n reasoning/understanding",
-        header: (column) => {
+        header: () => {
           return (
             <span>
               Commonsense <br />
@@ -439,7 +439,7 @@ export const accColumns: ColumnDef<Info>[] = [
         },
       },
       {
-        header: (column) => {
+        header: () => {
           return (
             <span>
               Problem <br />

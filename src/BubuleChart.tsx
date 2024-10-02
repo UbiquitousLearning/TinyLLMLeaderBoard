@@ -2,7 +2,7 @@ import { records } from "./lib/data";
 import ReactECharts from "echarts-for-react";
 import * as echarts from "echarts";
 
-let data = {
+const data = {
   Winogrande: [],
   MMLU: [],
   Hellaswag: [],
