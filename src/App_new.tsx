@@ -153,6 +153,10 @@ export function NewApp() {
                 <li>
                   🚀 Icons: 🤖 for base model, 💠 for Instruct finetuned model.
                 </li>
+                <li>
+                  Some of the items are not available due to the lack of source
+                  of information or to be filled.
+                </li>
               </ul>
             </AlertDescription>
           </Alert>

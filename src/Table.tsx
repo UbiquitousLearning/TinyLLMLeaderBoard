@@ -388,7 +388,13 @@ export const accColumns: ColumnDef<Info>[] = [
   {
     header: "Parameters",
     accessorKey: "Parameters",
-    cell: (record) => <span>{record.getValue()?.toString() ?? "-"}</span>,
+    cell: (record) => (
+      <span>
+        {(record.getValue() as string).length > 1
+          ? (record.getValue() as string)
+          : "-"}
+      </span>
+    ),
   },
   {
     header: "Release Date",
@@ -403,14 +409,22 @@ export const accColumns: ColumnDef<Info>[] = [
   {
     header: "Context Window",
     accessorKey: "MaxContextWindow",
-    cell: (record) => <span>{record.getValue() as string}</span>,
+    cell: (record) => (
+      <span>
+        {(record.getValue() as string).length > 1
+          ? (record.getValue() as string)
+          : "-"}
+      </span>
+    ),
   },
   {
     header: "Training Tok",
     accessorKey: "TrainingTokens",
     cell: (record) => (
       <span style={{ width: "150px", display: "inline-block" }}>
-        {record.getValue() as string}
+        {(record.getValue() as string).length > 1
+          ? (record.getValue() as string)
+          : "-"}
       </span>
     ),
   },
