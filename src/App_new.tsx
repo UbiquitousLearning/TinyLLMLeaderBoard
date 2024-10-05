@@ -141,14 +141,22 @@ export function NewApp() {
                   <strong>Math</strong> is the average of gsm8k,minerva_math.
                 </li>
                 <li>
-                  🛸 Performance Metrics tested with{" "}
+                  🛸 Performance Metrics are tested with{" "}
                   <a
                     href="https://github.com/EleutherAI/lm-evaluation-harness"
                     className="underline font-semibold"
                   >
                     lm-evaluation-harness
                   </a>{" "}
-                  library.{" "}
+                  library.Math part is tested with{" "}
+                  <a
+                    href="https://github.com/ZubinGou/math-evaluation-harness"
+                    className="underline font-semibold"
+                  >
+                    math-evaluation-harness
+                  </a>{" "}
+                  and vLLM,thus the results of models that not supported by vLLM
+                  are not available.
                 </li>
                 <li>
                   🚀 Icons: 🤖 for base model, 💠 for Instruct finetuned model.
